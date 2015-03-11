@@ -11,12 +11,20 @@ This is a very simple module that will install nxlog on a Windows host and then 
 
 ## Description
 In params.pp you should update variable to meet your needs. Example:  
+```puppet
 class nxlog::params {  
   $nxlog_version = '2.8.1248'  
   $logstash_dest = '192.168.10.10'  
   $logstash_dest_port = '3515'  
   $service_enabled = 'true'  
 }  
+```
+In your site.pp   
+```puppet
+node 'cheese.com' {
+  class {'nxlog':}
+}
+```
 
 ## Dependencies
 windows_facts - https://github.com/Simspace/puppet-windows_facts  
