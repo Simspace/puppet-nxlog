@@ -1,0 +1,39 @@
+define ROOT <%= @programfilesx86 %>\nxlog
+
+Moduledir         %ROOT%\modules
+CacheDir          %ROOT%\data
+Pidfile           %ROOT%\data\nxlog.pid
+SpoolDir          %ROOT%\data
+LogFile           %ROOT%\data\nxlog.log
+
+<Extension json>
+    Module      xm_json
+</Extension>
+
+<Input internal>
+    Module      im_internal
+</Input>
+
+<Input eventlog>
+    Module      im_msvistalog
+    # this kinda works for me, put * to get everything
+    Query       <QueryList>\
+                    <Query Id="0">\
+                        <Select Path="Application">*</Select>\
+                        <Select Path="System">*</Select>\
+                        <Select Path="Security">*</Select>\
+                    </Query>\
+                </QueryList>
+</Input>
+
+<Output out>
+    Module      om_tcp
+    Host        <%= @logstash_dest %>
+    Port        <%= @logstash_dest_port %>
+    Exec        $EventReceivedTime = integer($EventReceivedTime) / 1000000; \
+                to_json();
+</Output>
+
+<Route 1>
+    Path        eventlog, internal => out
+</Route>
